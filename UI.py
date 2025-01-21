@@ -1,29 +1,17 @@
 import tkinter
 from tkinter import *
 from win32api import GetSystemMetrics
-
-class Button:
-    def __init__(self, window, width, height,image_path, target_function, x_relative, y_relative, name):
-        # get image
-        self.image = PhotoImage(file=r"C:\Users\maxce\Downloads\2769159.png")
-        #image.zoom(image_width_scale, image_height_scale)
-        # resize
-        # create button
-        button = tkinter.Button(window, text='name', image = self.image, height=height, width=width)
-        button = tkinter.Button(width=25, height=25, image=self.image)
-        # get absolute position
-        window_height = window.winfo_vrootheight()
-        window_width = window.winfo_vrootwidth()
-        button_x = x_relative*window_width
-        button_y = y_relative*window_height
-
-
-        button.place(x=button_x,y=button_y)
+import os
 
 
 
-def placeholder():
-    print('heyo')
+# Variables
+global active_popout
+active_popout = True
+global current_view
+current_view = 'all_mails'
+
+# initiate window
 
 # get size
 monitor_Width =GetSystemMetrics(0)
@@ -36,18 +24,59 @@ window.geometry(resolution_string)
 window.title('Trust')
 
 
+# layouts
+def generate_popout(inboxes):
+    pass
+def reload():
+    global current_view
+    global active_popout
+    if active_popout:
+        generate_popout
 
-buttons = [] #item, name
-# popout button
+def toggle_popout():
+    global active_popout
+    if active_popout:
+        active_popout = False
+        reload()
+    else:
+        active_popout = True
+
+    print(active_popout)
+
+
+# Buttons
+def get_button(height, width, icon_name,  command,text='Place'):
+    # get path
+    path = os.path.abspath(__file__)
+    path = path.split('\\')
+    path = path[0:-1]
+    image_path = ''
+    for i in path:
+        image_path +=f'{i}\\'
+    image_path += f'images\\{icon_name}'
+
+    # get_icon
+    image = PhotoImage(file=image_path)
+    original_width = image.width()
+    original_height = image.height()
+    print(image.width(), image.height())
+    image = image.zoom(width)
+    print(image.width(), image.height())
+    image = image.subsample(original_width)
+    print(original_width,original_height)
 
 
 
-Button = Button(window, 250, 250, r"C:\Users\maxce\Downloads\2769159.png", placeholder, 0, 0, 'popout')
+    button = tkinter.Button(window, text='name', image = image, height=height, width=width, command=command)
+    button.image = image
+    return button
 
-image = PhotoImage(file=r"C:\Users\maxce\Downloads\2769159.png")
-print(image)
-popout_button = tkinter.Button(width=25, height=25,image=image )
-popout_button.place(x=100, y=1)
+# actual buttons
+popout = get_button(25, 25, r'popout.png', command=toggle_popout)
+popout.place(x=1, y=1)
+
+
+
 
 
 
